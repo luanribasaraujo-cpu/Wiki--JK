@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wiki — Jujutsu Kaisen</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--glass:rgba(255,255,255,0.03);--muted:#9aa4b2}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:linear-gradient(180deg,#071025 0%, #08122a 60%);color:#e6eef6;min-height:100vh}
+    
+    header{padding:24px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap: wrap;}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:white;flex-shrink:0; box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+    
+    .controls{display:flex;gap:12px;align-items:center}
+    input.search{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:inherit;width:220px}
+    select{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:inherit}
+    option{background:#0b1220}
+    
+    main{padding:20px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+    
+    /* CARD & HOVER EFFECTS */
+    .card{
+        background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border-radius:12px;
+        padding:12px;
+        border:1px solid rgba(255,255,255,0.03);
+        cursor:pointer;
+        transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        position: relative; /* Necessário para a badge */
+        overflow: hidden;
+    }
+    .card:hover{
+        transform:translateY(-6px);
+        /* Efeito de Energia Amaldiçoada */
+        box-shadow: 0 0 25px rgba(124, 58, 237, 0.25), inset 0 0 0 1px rgba(124, 58, 237, 0.3);
+        border-color: rgba(124, 58, 237, 0.5);
+    }
+    
+    /* GRADE BADGES */
+    .grade-badge { 
+        position: absolute; 
+        top: 12px; 
+        right: 12px; 
+        font-size: 10px; 
+        font-weight: 800; 
+        padding: 4px 8px; 
+        border-radius: 6px; 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
+        z-index: 2; 
+        backdrop-filter: blur(4px);
+    }
+    .grade-special { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; box-shadow: 0 2px 10px rgba(220, 38, 38, 0.5); }
+    .grade-1 { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4); }
+    .grade-2 { background: #10b981; color: white; }
+    .grade-semi-1 { background: #6366f1; color: white; }
+    .grade-4 { background: #4b5563; color: white; }
+    .grade-none { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #d1d5db; }
+
+    .avatar{
+        width:100%;
+        height:220px;
+        border-radius:8px;
+        object-fit: cover;
+        background:#0b1220;
+        margin-bottom:12px;
+        display: block;
+        transition: opacity 0.3s;
+    }
+    
+    .name{font-weight:700;margin:0; font-size: 1.1rem;}
+    .role{font-size:13px;color:var(--muted);margin-top:4px}
+    .tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+    .tag{font-size:11px;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.05);color:var(--muted); border: 1px solid rgba(255,255,255,0.02);}
+    
+    footer{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px;}
+    
+    /* MODAL */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:40;backdrop-filter: blur(8px); padding: 20px;}
+    .modal{width:min(850px,100%);background:#111827;border-radius:16px;padding:0;border:1px solid rgba(255,255,255,0.1);box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;}
+    
+    .modal-content { display: flex; gap: 24px; padding: 24px; }
+    
+    .modal .thumb{
+        width:260px;
+        height:380px;
+        border-radius:12px;
+        object-fit: cover;
+        background:#1f2937;
+        flex-shrink:0;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .close{cursor:pointer;border:none;background:rgba(255,255,255,0.05);color:white;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.2s;}
+    .close:hover{background:rgba(255,255,255,0.15); transform: rotate(90deg);}
+    
+    .tech-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+        background: rgba(0,0,0,0.2);
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    .tech-item span { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .tech-item strong { color: #e5e7eb; font-size: 14px; }
+
+    @media (max-width:700px){
+      header{flex-direction:column; align-items:stretch;}
+      .controls{flex-wrap:wrap}
+      .search{width: 100%;}
+      .modal-content{flex-direction:column;}
+      .modal .thumb{width:100%;height:300px; object-position: top;}
+      .tech-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">JK</div>
+      <div>
+        <h1>Arquivo Jujutsu</h1>
+        <p class="lead">Enciclopédia de Feiticeiros e Maldições</p>
+      </div>
+    </div>
+    <div class="controls">
+      <input class="search" placeholder="Buscar personagem ou técnica..." id="search" />
+      <select id="filter">
+        <option value="all">Todos</option>
+        <option value="aluno">Alunos</option>
+        <option value="professor">Professores</option>
+        <option value="antagonista">Antagonistas</option>
+        <option value="especial">Grau Especial</option>
+      </select>
+    </div>
+  </header>
+  
+  <main>
+    <div class="grid" id="grid"></div>
+  </main>
+  
+  <footer>
+    <p>Projeto de Estudo - Jujutsu Kaisen Wiki</p>
+  </footer>
+
+  <div id="modalRoot"></div>
+
+  <script>
+    // =================================================================
+    // BASE DE DADOS ENRIQUECIDA
+    // =================================================================
+    const characters = [
+      {
+        id: 'gojo',
+        name: 'Satoru Gojo',
+        role: 'Professor',
+        grade: 'Especial',
+        gradeClass: 'grade-special',
+        short: 'O feiticeiro mais forte da era moderna.',
+        bio: `Satoru Gojo é o orgulho do Clã Gojo, o primeiro em 400 anos a nascer com os Seis Olhos e o Ilimitado simultaneamente. Seu poder é tão imenso que seu nascimento alterou o equilíbrio do mundo. Apesar de sua personalidade despreocupada, ele deseja reformar o mundo jujutsu através da educação.`,
+        technique: 'Ilimitado (Limitless)',
+        domain: 'Vazio Infinito (Infinite Void)',
+        image: 'https://i.pinimg.com/736x/87/40/e3/8740e34c07920155b4142d11342f0c76.jpg',
+        tags: ['Seis Olhos','Vazio Roxo','Professor']
+      },
+      {
+        id: 'sukuna',
+        name: 'Ryomen Sukuna',
+        role: 'Antagonista',
+        grade: 'Especial',
+        gradeClass: 'grade-special',
+        short: 'O Rei das Maldições da Era Heian.',
+        bio: `Sukuna é uma calamidade natural em forma de feiticeiro. Na Era de Ouro, ele derrotou todos que o desafiaram. Dividiu sua alma em 20 dedos indestrutíveis que atravessaram as eras. Ele é sádico, calculista e possui um conhecimento profundo sobre a essência da energia amaldiçoada.`,
+        technique: 'Desmantelar & Clivar',
+        domain: 'Santuário Malevolente',
+        image: 'https://i.pinimg.com/736x/b5/02/76/b50276185854b732551e180630718507.jpg',
+        tags: ['Rei das Maldições','Encarnado','Heian']
+      },
+      {
+        id: 'yuji',
+        name: 'Yuji Itadori',
+        role: 'Aluno',
+        grade: 'Sem Grau', // Tecnicamente ainda não oficializado como Grau 1 na anime
+        gradeClass: 'grade-none',
+        short: 'Receptáculo de Sukuna com força sobre-humana.',
+        bio: `Um prodígio físico que comeu o dedo de Sukuna para salvar seus amigos. Yuji é especialista em combate corpo-a-corpo e tem uma durabilidade anormal. Sua evolução é constante, aprendendo a manipular energia amaldiçoada em tempo recorde.`,
+        technique: 'Punho Divergente / Kokusen', 
+        domain: 'Nenhum',
+        image: 'https://i.redd.it/gd7366srixsc1.png',
+        tags: ['Protagonista','Kokusen','Receptáculo']
+      },
+      {
+        id: 'megumi',
+        name: 'Megumi Fushiguro',
+        role: 'Aluno',
+        grade: 'Grau 2', // No inicio
+        gradeClass: 'grade-2',
+        short: 'Usuário das Dez Sombras com grande potencial.',
+        bio: `Filho de Toji Fushiguro, Megumi é um estrategista brilhante. Ele herdou a técnica mais prezada do Clã Zenin. Diferente de Yuji, ele tem uma visão mais pragmática sobre quem salvar. Sukuna tem um interesse particular em seu potencial oculto.`,
+        technique: 'Dez Sombras (Ten Shadows)',
+        domain: 'Jardim das Sombras (Incompleto)',
+        image: 'https://i.pinimg.com/originals/c9/29/73/c929737eb156d94b005e83921509312b.jpg',
+        tags: ['Shikigami','Clã Zenin','Mahoraga']
+      },
+      {
+        id: 'yuta',
+        name: 'Yuta Okkotsu',
+        role: 'Aluno',
+        grade: 'Especial',
+        gradeClass: 'grade-special',
+        short: 'Prodígio com energia amaldiçoada infinita.',
+        bio: `Protagonista de Jujutsu Kaisen 0. Yuta amaldiçoou sua amiga de infância, Rika, transformando-a em uma entidade monstruosa. Após treinar com Gojo e Miguel, ele retorna como um dos pilares da sociedade Jujutsu, capaz de copiar técnicas.`,
+        technique: 'Cópia (Rika)',
+        domain: 'Amor Mútuo e Verdadeiro',
+        image: 'https://i.pinimg.com/736x/44/12/32/44123282245ae2754630a9978602875b.jpg',
+        tags: ['Cópia','Rika','JJK 0']
+      },
+      {
+        id: 'toji',
+        name: 'Toji Fushiguro',
+        role: 'Vilão',
+        grade: 'N/A', // Restrição Celestial
+        gradeClass: 'grade-none',
+        short: 'O Assassino de Feiticeiros.',
+        bio: `Nascido no Clã Zenin sem energia amaldiçoada, Toji foi ostracizado. Em troca, ganhou um corpo perfeito através da Restrição Celestial. Ele quase matou Gojo Satoru jovem, provando que habilidade física pura e preparo podem superar técnicas divinas.`,
+        technique: 'Restrição Celestial (Físico)',
+        domain: 'Nenhum',
+        image: 'https://i.pinimg.com/736x/95/94/d4/9594d4681752b04c865f8a0937a00f2e.jpg',
+        tags: ['Assassino','Pai do Megumi','Lança Invertida']
+      },
+      {
+        id: 'nanami',
+        name: 'Kento Nanami',
+        role: 'Professor', // Mentor
+        grade: 'Grau 1',
+        gradeClass: 'grade-1',
+        short: 'O ex-assalariado estoico.',
+        bio: `Nanami deixou o mundo Jujutsu para trabalhar em escritório, mas voltou porque "trabalho é uma merda" em qualquer lugar. Ele segue horários rígidos e detesta horas extras. Sua técnica cria pontos fracos forçados nos inimigos na proporção 7:3.`,
+        technique: 'Proporção (Ratio)',
+        domain: 'Nenhum',
+        image: 'https://i.pinimg.com/736x/32/87/a6/3287a6c905391d1e679e9544719227e2.jpg',
+        tags: ['Grau 1','Mentor','Hora Extra']
+      },
+      {
+        id: 'mahito',
+        name: 'Mahito',
+        role: 'Antagonista',
+        grade: 'Especial', // Maldição
+        gradeClass: 'grade-special',
+        short: 'A maldição nascida do ódio humano.',
+        bio: `Mahito é uma maldição jovem, imatura e incrivelmente perigosa. Ele acredita que a alma precede o corpo e pode remodelar ambos com um toque. É o nêmesis natural de Yuji Itadori.`,
+        technique: 'Transfiguração Ociosa',
+        domain: 'Auto-Incorporação da Perfeição',
+        image: 'https://i.pinimg.com/736x/43/e7/87/43e787884d59f37213d2f93922f30691.jpg',
+        tags: ['Maldição','Almas','Transfiguração']
+      },
+      {
+        id: 'maki',
+        name: 'Maki Zenin',
+        role: 'Aluno',
+        grade: 'Grau 4', // Oficialmente, mas poder de Grau 1/Especial
+        gradeClass: 'grade-4',
+        short: 'Rejeitada pelo clã, guerreira de elite.',
+        bio: `Maki não vê maldições sem óculos, mas possui força física aprimorada (Restrição Celestial incompleta inicialmente). Ela quer se tornar chefe do Clã Zenin apenas para destruí-lo e provar seu valor.`,
+        technique: 'Nenhuma (Uso de Ferramentas)',
+        domain: 'Nenhum',
+        image: 'https://i.pinimg.com/736x/21/f8/f4/21f8f41399f57d6928e83348633c5e8f.jpg',
+        tags: ['Armas Amaldiçoadas','Clã Zenin']
+      },
+      { 
+        id: 'toge',
+        name: 'Toge Inumaki',
+        role: 'Aluno',
+        grade: 'Semi-Grau 1',
+        gradeClass: 'grade-semi-1',
+        short: 'Usuário da Fala Amaldiçoada.',
+        bio: `Descendente do clã Inumaki. Suas palavras carregam poder e obrigam o ouvinte a obedecer, mas causam dano à sua própria garganta. Ele fala apenas ingredientes de onigiri para evitar acidentes.`,
+        technique: 'Fala Amaldiçoada (Cursed Speech)',
+        domain: 'Nenhum',
+        image: 'https://i.pinimg.com/736x/8d/c7/2b/8dc72b3802e3b2661df230f62264bd4a.jpg',
+        tags: ['Onigiri','Clã Inumaki']
+      }
+    ];
+
+    const grid = document.getElementById('grid');
+    const modalRoot = document.getElementById('modalRoot');
+    const searchEl = document.getElementById('search');
+    const filterEl = document.getElementById('filter');
+
+    // Renderização do Card
+    function renderGrid(list){
+      grid.innerHTML = '';
+      if(list.length === 0){
+        grid.innerHTML = '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:40px">Nenhum feiticeiro encontrado nos registros.</p>';
+        return;
+      }
+      list.forEach(ch => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="grade-badge ${ch.gradeClass || 'grade-4'}">${ch.grade || 'N/A'}</div>
+          <img class="avatar" src="${ch.image}" alt="${ch.name}" loading="lazy" />
+          <div>
+            <h3 class="name">${ch.name}</h3>
+            <div class="role">${ch.role}</div>
+            <div class="tags">${ch.tags.slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          </div>
+        `;
+        card.addEventListener('click',()=>openModal(ch));
+        grid.appendChild(card);
+      });
+    }
+
+    // Modal Atualizado com Dados Técnicos
+    function openModal(ch){
+      modalRoot.innerHTML = '';
+      const back = document.createElement('div');
+      back.className = 'modal-backdrop';
+      
+      // Fecha ao clicar fora
+      back.addEventListener('click', (e) => {
+        if(e.target === back) modalRoot.innerHTML = '';
+      });
+
+      back.innerHTML = `
+        <div class="modal" role="dialog" aria-modal="true">
+          <div class="modal-content">
+            <img class="thumb" src="${ch.image}" alt="${ch.name}" />
+            <div style="flex:1">
+              <div class="modal-header">
+                <div>
+                  <h2 style="margin:0; font-size: 28px;">${ch.name}</h2>
+                  <div style="color:var(--muted); margin-top:4px; font-size:14px;">${ch.role} • ${ch.grade}</div>
+                </div>
+                <button class="close" title="Fechar">✕</button>
+              </div>
+
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+                 ${ch.tags.map(t=>`<span class="tag" style="background:var(--accent); color:white; border:none;">${t}</span>`).join('')}
+              </div>
+
+              <div class="tech-grid">
+                <div class="tech-item">
+                    <span>Técnica Inata</span>
+                    <strong style="color: #a78bfa;">${ch.technique}</strong>
+                </div>
+                <div class="tech-item">
+                    <span>Expansão de Domínio</span>
+                    <strong style="color: ${ch.domain !== 'Nenhum' ? '#f472b6' : '#525252'};">${ch.domain}</strong>
+                </div>
+              </div>
+
+              <div style="line-height: 1.6; color: #d1d5db; font-size:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:16px;">
+                <h4 style="margin: 0 0 8px 0; color: white; font-size:14px; text-transform:uppercase; letter-spacing:1px; color:var(--muted)">Registro</h4>
+                ${ch.bio}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      back.querySelector('.close').addEventListener('click', () => modalRoot.innerHTML = '');
+      modalRoot.appendChild(back);
+    }
+
+    // Filtros
+    function applyFilters(){
+      const q = searchEl.value.trim().toLowerCase();
+      const f = filterEl.value.toLowerCase();
+      
+      let list = characters.filter(c => {
+        // Filtro especial para 'especial' checando a propriedade gradeClass
+        let roleMatch = true;
+        if(f === 'especial') {
+            roleMatch = c.gradeClass === 'grade-special';
+        } else if (f !== 'all') {
+            roleMatch = c.role.toLowerCase() === f;
+        }
+
+        const searchMatch = !q || (
+          c.name.toLowerCase().includes(q) || 
+          c.short.toLowerCase().includes(q) ||
+          c.technique.toLowerCase().includes(q) || // Busca por técnica também
+          c.tags.some(t => t.toLowerCase().includes(q))
+        );
+        return roleMatch && searchMatch;
+      });
+      renderGrid(list);
+    }
+
+    searchEl.addEventListener('input', applyFilters);
+    filterEl.addEventListener('change', applyFilters);
+
+    // Inicialização
+    renderGrid(characters);
+  </script>
+</body>
+</html>
