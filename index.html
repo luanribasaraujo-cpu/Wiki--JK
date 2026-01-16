@@ -6,99 +6,8 @@
   <title>Jujutsu Kaisen — Wiki Unificada</title>
   <style>
     /* ===============================
-   AURA AMALDIÇOADA — JUJUTSU
-================================ */
-
-.card {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Aura roxa */
-.card::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  background: radial-gradient(
-    circle at top,
-    rgba(124, 58, 237, 0.7),
-    rgba(124, 58, 237, 0.3),
-    transparent 65%
-  );
-  opacity: 0;
-  filter: blur(18px);
-  transition: opacity 0.4s ease;
-  z-index: 0;
-}
-/* ===============================
-   AURA VERMELHA — ANTAGONISTAS
-================================ */
-
-.card.antagonista::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  background: radial-gradient(
-    circle at top,
-    rgba(220, 38, 38, 0.75),
-    rgba(153, 27, 27, 0.45),
-    transparent 65%
-  );
-  opacity: 0;
-  filter: blur(20px);
-  transition: opacity 0.4s ease;
-  z-index: 0;
-}
-
-.card.antagonista:hover::before {
-  opacity: 1;
-}
-
-@keyframes cursedPulseRed {
-  0% {
-    box-shadow: 0 0 0 rgba(220, 38, 38, 0);
-  }
-  50% {
-    box-shadow: 0 0 45px rgba(220, 38, 38, 0.7);
-  }
-  100% {
-    box-shadow: 0 0 0 rgba(220, 38, 38, 0);
-  }
-}
-
-.card.antagonista:hover {
-  animation: cursedPulseRed 1.3s infinite;
-}
-
-/* Ativa a aura */
-.card:hover::before {
-  opacity: 1;
-}
-
-/* Pulso da energia */
-@keyframes cursedPulse {
-  0% {
-    box-shadow: 0 0 0 rgba(124, 58, 237, 0);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(124, 58, 237, 0.6);
-  }
-  100% {
-    box-shadow: 0 0 0 rgba(124, 58, 237, 0);
-  }
-}
-
-.card:hover {
-  animation: cursedPulse 1.3s infinite;
-}
-
-/* Garante conteúdo acima da aura */
-.card > * {
-  position: relative;
-  z-index: 1;
-}
-
-
+       CONFIGURAÇÕES GERAIS E VARIÁVEIS
+    ================================ */
     :root {
       --bg: #0f1724;
       --card: #0b1220;
@@ -106,20 +15,102 @@
       --accent-glow: rgba(124, 58, 237, 0.5);
       --glass: rgba(255, 255, 255, 0.03);
       --muted: #9aa4b2;
+      --text: #e6eef6;
     }
 
     * { box-sizing: border-box; }
+    
+    /* Transições suaves para troca de tema */
+    body, .card, .modal, .tab-btn, header, .grade-badge, .logo, input, select, button {
+      transition: background 0.6s ease, color 0.6s ease, border-color 0.6s ease, box-shadow 0.6s ease;
+    }
+
     body {
       margin: 0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
-      background: linear-gradient(180deg, #071025 0%, #08122a 60%);
-      color: #e6eef6;
+      background-color: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden; /* Impede scroll lateral das partículas */
     }
 
-    /* Header e Navegação */
+    /* ===============================
+       EFEITOS DE FUNDO (BACKGROUNDS)
+    ================================ */
+    
+    /* Container fixo para efeitos de fundo para não interferir no scroll */
+    #bg-effects {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      transition: opacity 1s ease;
+    }
+
+    /* 1. TEMA PADRÃO (Jardim das Sombras): Fluidez */
+    /* Animação de líquido escuro */
+    body:not(.theme-gojo):not(.theme-sukuna) #bg-effects {
+      background: linear-gradient(125deg, #071025, #0f1724, #1e1b4b, #071025);
+      background-size: 400% 400%;
+      animation: shadowFluid 15s ease infinite;
+    }
+
+    @keyframes shadowFluid {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 2. TEMA GOJO (Vazio Infinito): Partículas Brancas */
+    body.theme-gojo #bg-effects {
+      background: #020617;
+    }
+    
+    /* Cria as partículas usando gradientes radiais múltiplos */
+    body.theme-gojo #bg-effects::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px);
+      background-size: 50px 50px;
+      background-position: 0 0, 25px 25px;
+      animation: infiniteVoidParticles 4s linear infinite;
+      opacity: 0.4;
+    }
+    
+    /* Segunda camada de partículas para profundidade */
+    body.theme-gojo #bg-effects::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px);
+      background-size: 90px 90px;
+      animation: infiniteVoidParticles 8s linear infinite reverse;
+      opacity: 0.2;
+    }
+
+    @keyframes infiniteVoidParticles {
+      from { transform: translateY(0) scale(1); }
+      to { transform: translateY(-50px) scale(1.1); }
+    }
+
+    /* 3. TEMA SUKUNA (Santuário): Fundo Sólido Ameaçador */
+    body.theme-sukuna #bg-effects {
+      background: linear-gradient(180deg, #1a0505 0%, #2b0b0b 100%);
+    }
+
+    /* ===============================
+       LAYOUT & HEADER
+    ================================ */
+
     header { padding: 24px 20px 0 20px; display: flex; flex-direction: column; gap: 20px; }
     .top-bar { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    
     .brand { display: flex; gap: 12px; align-items: center; }
     .logo {
       width: 56px; height: 56px; border-radius: 10px;
@@ -131,175 +122,201 @@
     h1 { margin: 0; font-size: 20px; }
     p.lead { margin: 0; color: var(--muted); font-size: 13px; }
 
-    .controls { display: flex; gap: 12px; align-items: center; }
-    input.search { background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.04); padding: 8px 12px; border-radius: 10px; color: inherit; width: 220px; }
-    select { background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.04); padding: 8px; border-radius: 8px; color: inherit; }
-    option { background: #0b1220; }
+    /* Controles (Search + Select + Botão Domínio) */
+    .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    
+    input.search { 
+      background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); 
+      padding: 10px 12px; border-radius: 8px; color: inherit; width: 200px; outline: none;
+    }
+    input.search:focus { border-color: var(--accent); }
 
-    /* Abas */
+    select { 
+      background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); 
+      padding: 10px; border-radius: 8px; color: inherit; cursor: pointer; outline: none;
+    }
+    option { background: #0b1220; color: white; }
+
+    /* Botão de Domínio (Novo Estilo no Header) */
+    .domain-control-wrapper {
+      position: relative;
+    }
+
+    .domain-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0 16px;
+      height: 38px; /* Altura igual ao input */
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .domain-btn:hover { filter: brightness(1.2); }
+
+    /* Dropdown de Temas */
+    .theme-dropdown {
+      position: absolute;
+      top: 120%;
+      right: 0;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 180px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-10px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 50;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .domain-control-wrapper.open .theme-dropdown {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    .theme-option {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 8px 12px;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .theme-option:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
+    
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-default { background: #7c3aed; box-shadow: 0 0 8px #7c3aed; }
+    .dot-sukuna { background: #dc2626; box-shadow: 0 0 8px #dc2626; }
+    .dot-gojo { background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+
+    /* ===============================
+       ESTILOS DOS CARDS E AURA
+    ================================ */
+    /* Aura roxa */
+    .card { position: relative; overflow: hidden; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.03); cursor: pointer; display: flex; flex-direction: column; }
+    
+    .card::before {
+      content: ""; position: absolute; inset: -6px;
+      background: radial-gradient(circle at top, var(--accent), rgba(124, 58, 237, 0.3), transparent 65%);
+      opacity: 0; filter: blur(18px); transition: opacity 0.4s ease; z-index: 0;
+    }
+    
+    /* Aura vermelha (Antagonista) */
+    .card.antagonista::before {
+      background: radial-gradient(circle at top, rgba(220, 38, 38, 0.75), rgba(153, 27, 27, 0.45), transparent 65%);
+    }
+    
+    .card:hover::before { opacity: 1; }
+    .card:hover { transform: translateY(-6px); border-color: var(--accent-glow); }
+    .card > * { position: relative; z-index: 1; }
+
+    /* Pulsações */
+    @keyframes cursedPulse { 0% { box-shadow: 0 0 0 rgba(0,0,0,0); } 50% { box-shadow: 0 0 40px var(--accent-glow); } 100% { box-shadow: 0 0 0 rgba(0,0,0,0); } }
+    .card:hover { animation: cursedPulse 1.3s infinite; }
+    .card.antagonista:hover { animation: cursedPulse 1.3s infinite; } /* Reusa animação mas a cor vem do glow variavel se quiser, mas aqui mantivemos o css base */
+
+    /* ===============================
+       CONTEÚDO PRINCIPAL (Grid, Modal, Tabs)
+    ================================ */
     .tabs { display: flex; gap: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-top: 10px; padding: 0 20px; }
-    .tab-btn { background: none; border: none; color: var(--muted); font-size: 16px; padding: 12px 0; cursor: pointer; position: relative; transition: color 0.2s; }
-    .tab-btn.active { color: #e6eef6; font-weight: 700; }
+    .tab-btn { background: none; border: none; color: var(--muted); font-size: 16px; padding: 12px 0; cursor: pointer; position: relative; }
+    .tab-btn.active { color: var(--text); font-weight: 700; }
     .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--accent); box-shadow: 0 -2px 10px var(--accent); }
 
-    /* Grid e Cards */
     main { padding: 20px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
 
-    .card {
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
-      border-radius: 12px; padding: 12px; border: 1px solid rgba(255, 255, 255, 0.03);
-      cursor: pointer; transition: all .2s ease; position: relative; overflow: hidden;
-      display: flex; flex-direction: column;
-    }
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 0 25px rgba(124, 58, 237, 0.25), inset 0 0 0 1px rgba(124, 58, 237, 0.3);
-      border-color: rgba(124, 58, 237, 0.5);
-    }
-
-    /* Badges de Grau */
-    .grade-badge {
-      position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 800;
-      padding: 4px 8px; border-radius: 6px; text-transform: uppercase; z-index: 2; backdrop-filter: blur(4px);
-    }
+    .grade-badge { position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; z-index: 2; backdrop-filter: blur(4px); }
     .grade-special { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
     .grade-1 { background: #2563eb; color: white; }
-    .grade-none { background: rgba(0,0,0,0.6); color: #d1d5db; border: 1px solid rgba(255,255,255,0.1); }
 
     .avatar { width: 100%; height: 220px; border-radius: 8px; object-fit: cover; background: #111827; margin-bottom: 12px; }
-    .card.fight-card .avatar { height: 160px; }
-
     .name { font-weight: 700; margin: 0; font-size: 17px; }
     .role { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 4px; text-transform: uppercase; }
     .short { color: var(--muted); margin-top: 8px; font-size: 13px; line-height: 1.4; flex-grow: 1; }
-    
     .tags { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
     .tag { font-size: 11px; padding: 4px 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.05); color: #cbd5e1; }
 
-    /* Modal Estilo Enriquecido */
+    /* Modal */
     .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(8px); padding: 20px; }
-    .modal { width: min(850px, 100%); background: #0b1220; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); max-height: 90vh; overflow-y: auto; position: relative; }
+    .modal { width: min(850px, 100%); background: var(--card); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
     .modal-content { display: flex; gap: 32px; padding: 32px; }
-    .modal .thumb { width: 280px; height: 400px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-    .close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.05); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 10; transition: transform 0.3s; }
-    .close:hover { transform: rotate(90deg); background: rgba(255,255,255,0.1); }
-
-    .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; }
-    .tech-item span { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
-    .tech-item strong { color: #a78bfa; font-size: 14px; }
+    .thumb { width: 280px; height: 400px; border-radius: 12px; object-fit: cover; flex-shrink: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.05); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 10; }
 
     @media (max-width: 750px) {
       .modal-content { flex-direction: column; align-items: center; }
-      .modal .thumb { width: 100%; height: 250px; }
-      .tech-grid { grid-template-columns: 1fr; }
+      .thumb { width: 100%; height: 250px; }
       .top-bar { flex-direction: column; align-items: flex-start; }
       .controls { width: 100%; }
       .search { flex: 1; }
     }
-    
+
     /* ===============================
-       EXPANSÃO DE DOMÍNIO (CORRIGIDO)
+       ANIMAÇÃO DE EXPANSÃO (OVERLAY)
     ================================ */
-
-    .domain-backdrop {
-      position: fixed;
-      inset: 0;
-      /* O backdrop-filter borra o que está ATRÁS do modal (o site), não o modal em si */
-      background: radial-gradient(
-        circle at center,
-        rgba(124, 58, 237, 0.35),
-        rgba(0, 0, 0, 0.95) 70%
-      );
-      backdrop-filter: blur(5px); /* Desfoque apenas no fundo do site */
-      animation: domainExpand 0.4s ease-out forwards;
-      z-index: 90;
-      display: flex; /* Garante alinhamento */
-      align-items: center;
-      justify-content: center;
+    #domainOverlay {
+      position: fixed; inset: 0; z-index: 999; pointer-events: none; display: flex; align-items: center; justify-content: center;
     }
-
-    /* Versão vermelha (antagonistas) */
-    .domain-backdrop.red {
-      background: radial-gradient(
-        circle at center,
-        rgba(222, 30, 30, 0.45),
-        rgba(0, 0, 0, 0.95) 70%
-      );
+    #domainOverlay::before {
+      content: ''; position: absolute; width: 100px; height: 100px; border-radius: 50%;
+      background: var(--anim-color, var(--accent));
+      transform: scale(0); opacity: 0; transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.3s;
     }
-
-    /* Animação corrigida: Removemos o 'filter: blur' que deixava o texto embaçado */
-    @keyframes domainExpand {
-      from {
-        opacity: 0;
-        transform: scale(1.1);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+    body.expanding #domainOverlay::before { transform: scale(40); opacity: 1; }
+    
+    /* Overlay do Modal ao abrir (Zoom effect) */
+    .domain-modal-bg {
+      position: fixed; inset: 0; z-index: 95;
+      background: radial-gradient(circle, var(--accent-glow), rgba(0,0,0,0.95) 80%);
+      animation: fadeIn 0.4s ease-out;
     }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
 
-    /* Modal entra com impacto */
-    @keyframes domainModalIn {
-      from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
+    /* ===============================
+       VARIAÇÕES DE TEMAS (CSS VARIABLES)
+    ================================ */
+    /* SUKUNA */
+    body.theme-sukuna {
+      --bg: #1a0505; --card: #2b0b0b; --accent: #dc2626;
+      --accent-glow: rgba(220, 38, 38, 0.6); --muted: #fca5a5;
     }
+    body.theme-sukuna .logo { background: linear-gradient(135deg, #7f1d1d, #ef4444); }
 
-    .modal {
-      animation: domainModalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      /* Garante que o modal em si não tenha filtros herdados */
-      filter: none !important; 
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      transform: translateZ(0); /* Aceleração de hardware para nitidez */
+    /* GOJO */
+    body.theme-gojo {
+      --bg: #0c1528; --card: #142038; --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.6); --muted: #94a3b8;
     }
+    body.theme-gojo .logo { background: linear-gradient(135deg, #0ea5e9, #bae6fd); color: #0c1528; }
 
-    /* =================================
-       FOCO PROFUNDO + EFEITOS DE FUNDO
-    ================================= */
-
-    /* Textura energética no fundo */
-    .domain-backdrop::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.02), transparent 45%);
-      animation: energyDrift 10s linear infinite;
-      z-index: -1;
-    }
-
-    @keyframes energyDrift {
-      from { transform: translate(0,0); }
-      to { transform: translate(-20px,-15px); }
-    }
-
-    /* CARD ATIVO (quando clicado) */
-    .card.active {
-      transform: scale(1.03);
-      filter: brightness(1.15) contrast(1.1);
-      box-shadow:
-        0 0 0 2px rgba(255,255,255,0.12),
-        0 0 40px rgba(124, 58, 237, 0.6);
-      z-index: 50;
-    }
-
-    .card.antagonista.active {
-      box-shadow:
-        0 0 0 2px rgba(255,255,255,0.12),
-        0 0 50px rgba(220, 38, 38, 0.75);
-    }
   </style>
 </head>
 <body>
+
+  <div id="bg-effects"></div>
+
+  <div id="domainOverlay"></div>
 
   <header>
     <div class="top-bar">
@@ -310,6 +327,7 @@
           <p class="lead">Enciclopédia de feiticeiros e maldições.</p>
         </div>
       </div>
+      
       <div class="controls">
         <input class="search" placeholder="Pesquisar..." id="search" />
         <select id="filter">
@@ -319,6 +337,25 @@
           <option value="antagonista">Antagonistas</option>
           <option value="especial">Grau Especial</option>
         </select>
+
+        <div class="domain-control-wrapper" id="domainWrapper">
+          <button class="domain-btn" onclick="toggleDomainMenu()">
+            <span>⚡</span> Domínio
+          </button>
+          
+          <div class="theme-dropdown">
+            <button class="theme-option" onclick="changeTheme('default')">
+              <span class="dot dot-default"></span> Padrão
+            </button>
+            <button class="theme-option" onclick="changeTheme('gojo')">
+              <span class="dot dot-gojo"></span> Vazio Infinito
+            </button>
+            <button class="theme-option" onclick="changeTheme('sukuna')">
+              <span class="dot dot-sukuna"></span> Santuário Malev.
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   </header>
@@ -336,6 +373,9 @@
   <div id="modalRoot"></div>
 
   <script>
+    // ===============================================
+    // DADOS (Mesmos dados anteriores)
+    // ===============================================
     const characters = [
       {
          id: 'yuji',
@@ -566,11 +606,19 @@
       }
     ];
 
+    // ===============================================
+    // LÓGICA PRINCIPAL
+    // ===============================================
+
     let currentTab = 'chars';
     const grid = document.getElementById('grid');
     const searchEl = document.getElementById('search');
     const filterEl = document.getElementById('filter');
+    const domainWrapper = document.getElementById('domainWrapper');
+    const overlay = document.getElementById('domainOverlay');
+    const body = document.body;
 
+    // --- Tabs & Renderização ---
     function switchTab(tab) {
       currentTab = tab;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -596,17 +644,8 @@
 
       filtered.forEach(item => {
         const card = document.createElement('article');
-        const isAntagonista =
-  currentTab === 'chars' &&
-  item.role &&
-  item.role.toLowerCase() === 'antagonista';
-
-card.className = `
-  card
-  ${currentTab === 'fights' ? 'fight-card' : ''}
-  ${isAntagonista ? 'antagonista' : ''}
-`;
-
+        const isAntagonista = currentTab === 'chars' && item.role && item.role.toLowerCase() === 'antagonista';
+        card.className = `card ${isAntagonista ? 'antagonista' : ''}`;
         
         let badge = (currentTab === 'chars' && item.grade) ? `<div class="grade-badge ${item.gradeClass}">${item.grade}</div>` : '';
         
@@ -620,62 +659,98 @@ card.className = `
             <div class="tags">${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
           </div>
         `;
-       card.onclick = () => {
-  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-  card.classList.add('active');
-  openModal(item);
-};
-
-
-    function openModal(item) {
-  const root = document.getElementById('modalRoot');
-  const isAntagonista = item.role && item.role.toLowerCase() === 'antagonista';
-
-  root.innerHTML = `
-    <div class="domain-backdrop ${isAntagonista ? 'red' : ''}">
-      <div class="modal-backdrop">
-        <div class="modal">
-          <button class="close">✕</button>
-          <div class="modal-content">
-            <img class="thumb" src="${item.image}">
-            <div style="flex:1">
-              <h2 style="font-size:32px; margin:0">${item.name}</h2>
-              <div style="color:var(--accent); font-weight:bold; margin:8px 0">
-                ${item.role} ${item.grade ? '• ' + item.grade : ''}
-              </div>
-
-              <div style="margin-top:20px; line-height:1.6; color:#d1d5db">
-                ${item.bio}
-              </div>
-
-              <div class="tags" style="margin-top:24px">
-                ${item.tags.map(t =>
-                  `<span class="tag" style="background:var(--accent); color:white">${t}</span>`
-                ).join('')}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  const close = () => {
-    root.innerHTML = '';
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-  };
-
-  root.querySelector('.close').onclick = close;
-  root.querySelector('.modal-backdrop').onclick = e => {
-    if (e.target.className === 'modal-backdrop') close();
-  };
-}
+        card.onclick = () => {
+          document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          openModal(item);
+        };
         grid.appendChild(card);
       });
     }
 
+    // --- Modal ---
+    function openModal(item) {
+      const root = document.getElementById('modalRoot');
+      const isAntagonista = item.role && item.role.toLowerCase() === 'antagonista';
+
+      root.innerHTML = `
+        <div class="domain-modal-bg"></div> <div class="modal-backdrop" style="background:transparent">
+          <div class="modal">
+            <button class="close">✕</button>
+            <div class="modal-content">
+              <img class="thumb" src="${item.image}">
+              <div style="flex:1">
+                <h2 style="font-size:32px; margin:0">${item.name}</h2>
+                <div style="color:var(--accent); font-weight:bold; margin:8px 0">
+                  ${item.role} ${item.grade ? '• ' + item.grade : ''}
+                </div>
+                <div style="margin-top:20px; line-height:1.6; color:var(--muted)">
+                  ${item.bio}
+                </div>
+                <div class="tags" style="margin-top:24px">
+                  ${item.tags.map(t => `<span class="tag" style="background:var(--accent); color:white">${t}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const close = () => {
+        root.innerHTML = '';
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+      };
+      root.querySelector('.close').onclick = close;
+      root.querySelector('.modal-backdrop').onclick = e => {
+        if (e.target.className === 'modal-backdrop') close();
+      };
+    }
+
+    // --- Sistema de Domínio (Temas) ---
+    function toggleDomainMenu() {
+      domainWrapper.classList.toggle('open');
+    }
+
+    function changeTheme(themeName) {
+      domainWrapper.classList.remove('open');
+
+      let overlayColor = '';
+      if (themeName === 'sukuna') overlayColor = '#dc2626';
+      else if (themeName === 'gojo') overlayColor = '#0ea5e9';
+      else overlayColor = '#7c3aed';
+
+      // Configura a cor da explosão
+      overlay.style.setProperty('--anim-color', overlayColor);
+
+      // Inicia Animação
+      body.classList.add('expanding');
+
+      // Troca classes no meio da animação (500ms)
+      setTimeout(() => {
+        body.classList.remove('theme-sukuna', 'theme-gojo');
+        if (themeName !== 'default') {
+          body.classList.add(`theme-${themeName}`);
+        }
+      }, 500); 
+
+      // Limpa animação
+      setTimeout(() => {
+        body.classList.remove('expanding');
+      }, 1000);
+    }
+
+    // Fecha dropdown se clicar fora
+    document.addEventListener('click', (e) => {
+      if (!domainWrapper.contains(e.target)) {
+        domainWrapper.classList.remove('open');
+      }
+    });
+
+    // Event Listeners
     searchEl.oninput = renderApp;
     filterEl.onchange = renderApp;
+    
+    // Inicialização
     renderApp();
   </script>
 </body>
